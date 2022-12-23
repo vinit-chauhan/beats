@@ -180,7 +180,11 @@ func (tr transformable) setBody(v mapstr.M) {
 func (tr transformable) body() mapstr.M {
 	val, err := tr.GetValue("body")
 	if err != nil {
-		// if it does not exist, initialize it
+		// if it does not exist, send empty body
+		if err == mapstr.ErrKeyNotFound {
+			return nil
+		}
+		// if any other error, send empty object in body
 		body := mapstr.M{}
 		tr.setBody(body)
 		return body

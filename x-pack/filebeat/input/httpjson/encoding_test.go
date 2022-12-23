@@ -157,3 +157,43 @@ func TestEncodeAsForm(t *testing.T) {
 		assert.Equal(t, "application/x-www-form-urlencoded", trReq.header().Get("Content-Type"))
 	}
 }
+
+func Test_encodeAsJSON(t *testing.T) {
+	type args struct {
+		trReq transformable
+	}
+
+	emptyBody := transformable{}
+	emptyBody.setBody(map[string]interface{}{})
+
+	nilBody := transformable{}
+	nilBody.setBody(nil)
+
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "positive/empty body",
+			args: args{
+				emptyBody,
+			},
+			want: []byte("{}"),
+		},
+		{
+			name: "positive/nil body",
+			args: args{
+				nilBody,
+			},
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, _ := encodeAsJSON(tt.args.trReq)
+			assert.Equalf(t, tt.want, got, "encodeAsJSON(%v)", tt.args.trReq)
+		})
+	}
+}

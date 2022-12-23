@@ -103,7 +103,7 @@ func registerDecoders() {
 }
 
 func encodeAsJSON(trReq transformable) ([]byte, error) {
-	if len(trReq.body()) == 0 {
+	if trReq.body() == nil {
 		return nil, nil
 	}
 	header := trReq.header()
