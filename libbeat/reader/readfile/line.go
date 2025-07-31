@@ -55,15 +55,21 @@ type LineReader struct {
 
 // NewLineReader creates a new reader object
 func NewLineReader(input io.ReadCloser, config Config, logger *logp.Logger) (*LineReader, error) {
+	fmt.Println("Creating new LineReader with encoding")
 	encoder := config.Codec.NewEncoder()
 
 	// Create newline char based on encoding
 	terminator, ok := lineTerminatorCharacters[config.Terminator]
+
+	fmt.Println("Using terminator:", terminator, "ok:", ok)
+
 	if !ok {
 		return nil, fmt.Errorf("unknown line terminator: %+v", config.Terminator)
 	}
 
 	nl, _, err := transform.Bytes(encoder, terminator)
+
+	fmt.Println("nl:", nl, "err:", err)
 	if err != nil {
 		return nil, err
 	}
@@ -184,6 +190,7 @@ func (r *LineReader) advance() error {
 
 		// Try to read more bytes into buffer
 		n, err := r.reader.Read(r.tempBuffer)
+		fmt.Println("Reading from input, n:", n, "err:", err)
 
 		if (errors.Is(err, io.EOF) || errors.Is(err, gzip.ErrChecksum)) && n > 0 {
 			// Continue processing the returned bytes. The next call will yield
